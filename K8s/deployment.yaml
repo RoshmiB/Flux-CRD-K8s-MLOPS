@@ -1,3 +1,19 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:a19d870b06167b49354297d52e90f576dd99f7c6bcbab1708eaf1fb5909f8cd8
-size 324
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ml-api
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: ml-api
+  template:
+    metadata:
+      labels:
+        app: ml-api
+    spec:
+      containers:
+      - name: ml-api
+        image: YOUR_DOCKERHUB/ml-api:latest
+        ports:
+        - containerPort: 80
