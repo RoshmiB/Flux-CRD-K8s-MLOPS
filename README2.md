@@ -277,3 +277,33 @@ kubectl get svc -->
         Watches your repo
         Syncs /k8s folder
 
+13. Reconcile flux :-
+   ![alt text](image-6.png)
+
+14. aced an exec format error due to architecture mismatch between ARM-based local builds and AMD64 EKS nodes. I resolved it using Docker buildx to build multi-architecture images.
+
+error :-
+    Events:
+  Type     Reason     Age                From               Message
+  ----     ------     ----               ----               -------
+  Normal   Scheduled  79s                default-scheduler  Successfully assigned ml-app/ml-api-7bb4c54f9d-qt7xt to ip-192-168-117-15.us-west-2.compute.internal
+  Normal   Pulling    78s                kubelet            Pulling image "725490567891.dkr.ecr.us-west-2.amazonaws.com/ml-app:v1"
+  Normal   Pulled     70s                kubelet            Successfully pulled image "725490567891.dkr.ecr.us-west-2.amazonaws.com/ml-app:v1" in 8.401s (8.401s including waiting). Image size: 152945393 bytes.
+  Normal   Created    25s (x4 over 70s)  kubelet            Created container: ml-app
+  Normal   Started    25s (x4 over 70s)  kubelet            Started container ml-app
+  Normal   Pulled     25s (x3 over 68s)  kubelet            Container image "725490567891.dkr.ecr.us-west-2.amazonaws.com/ml-app:v1" already present on machine
+  Warning  BackOff    0s (x6 over 67s)   kubelet            Back-off restarting failed container ml-app in pod ml-api-7bb4c54f9d-qt7xt_ml-app(8c751278-e6d3-4d30-a515-325cd9423357)
+
+(base) rajaguru@Roshmis-MacBook-Pro-2:Flux_test/Flux_CRD_K8s_MLOPS ‹main›$ k logs ml-api-7bb4c54f9d-qt7xt -n ml-app        
+exec /usr/local/bin/uvicorn: exec format error
+
+i) docker buildx create --use
+ii) docker buildx build \
+  --platform linux/amd64,linux/arm64 \
+  -t 725490567891.dkr.ecr.us-west-2.amazonaws.com/ml-app:v1 \
+  --push .
+iii) kubectl rollout restart deployment ml-api -n ml-app
+     flux reconcile kustomization flux-system
+
+
+
