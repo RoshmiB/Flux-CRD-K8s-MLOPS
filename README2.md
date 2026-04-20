@@ -225,7 +225,7 @@ Install Flux :-
 
 ```
 
-🔑 Generate GitHub token
+<!-- 🔑 Generate GitHub token
   👉 Go to GitHub → Settings → Developer Settings → Personal Access Token
   Permissions:
   repo
@@ -242,10 +242,8 @@ flux bootstrap github \
 
 Verify deployment:-
 kubectl get pods
-kubectl get svc
+kubectl get svc -->
 
-Access app:- 
-minikube service ml-api
 
 11. Flux video :- 
     https://www.youtube.com/watch?v=DqXDrAR4cJ4
@@ -278,3 +276,4 @@ minikube service ml-api
         Uses SSH key for auth
         Watches your repo
         Syncs /k8s folder
+
