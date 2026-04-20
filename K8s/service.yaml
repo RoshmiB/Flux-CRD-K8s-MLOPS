@@ -6,7 +6,7 @@ metadata:
 spec:
   type: ClusterIP
   selector:
-    app: ml-app
+    app: ml-api
   ports:
     - port: 80
       targetPort: 8000
