@@ -63,16 +63,90 @@ You’ll see Swagger UI
   "Longitude": -122.2
 }
 
+output :-
+
+![alt text](image-3.png)
+
+7. cd app
+docker build -t ml-app .
+
+![alt text](image-4.png)
+
+8. docker run -p 8000:8000 ml-app
+
+9. 
+Build & push Docker image
+
+aws ecr create-repository --repository-name ml-app
+
+Login
+aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin 725490567891.dkr.ecr.us-west-2.amazonaws.com
+Login Succeeded
+
+cat ~/.docker/config.json 
+{
+        "auths": {
+                "725490567891.dkr.ecr.us-west-2.amazonaws.com": {},
+                "aksdemosampleroshmi.azurecr.io": {},
+                "https://index.docker.io/v1/": {},
+                "public.ecr.aws": {}
+        },
+        "credsStore": "desktop"
+}%                                              
+
+
+docker tag ml-app:latest 725490567891.dkr.ecr.us-west-2.amazonaws.com/ml-app:v1
+docker push 725490567891.dkr.ecr.us-west-2.amazonaws.com/ml-app:v1
+
+
+10. 
+Create cluster :-
+`
+eksctl create cluster \
+  --name ml-cluster \
+  --region us-west-2 \
+  --nodegroup-name ml-nodes \
+  --node-type t3.medium \
+  --nodes 2 \
+  --nodes-min 1 \
+  --nodes-max 3 \
+  --managed
+
+Add EBS CSI addon :-
+eksctl create addon \
+  --name aws-ebs-csi-driver \
+  --cluster ml-cluster \
+  --region us-west-2
+
+Install AWS Load Balancer Controller
+curl -O https://raw.githubusercontent.com/kubernetes-sigs/aws-load-balancer-controller/main/docs/install/iam_policy.json
+
+aws iam create-policy \
+  --policy-name AWSLoadBalancerControllerIAMPolicy \
+  --policy-document file://iam_policy.json
+
+eksctl create iamserviceaccount \
+  --cluster=ml-cluster \
+  --namespace=kube-system \
+  --name=aws-load-balancer-controller \
+  --attach-policy-arn=arn:aws:iam::725490567891:policy/AWSLoadBalancerControllerIAMPolicy \
+  --override-existing-serviceaccounts \
+  --approve
+
+helm repo add eks https://aws.github.io/eks-charts
+helm repo update
+
+helm install aws-load-balancer-controller eks/aws-load-balancer-controller \
+  -n kube-system \
+  --set clusterName=ml-cluster \
+  --set serviceAccount.create=false \
+  --set serviceAccount.name=aws-load-balancer-controller
+
+kubectl get pods -n kube-system
+`
 
 
 
-
-
-Step 1 — Start cluster
-minikube start
-Step 2 — Build & push Docker image
-docker build -t YOUR_DOCKERHUB/ml-api:latest ./app
-docker push YOUR_DOCKERHUB/ml-api:latest
 
 👉 Replace in deployment.yaml
 
@@ -81,7 +155,7 @@ flux install
 Step 4 — Connect repo to cluster
 flux bootstrap github \
   --owner=YOUR_USERNAME \
-  --repository=ml-gitops-flux-demo \
+  --repository=ml-gitops-flux-demo \  
   --branch=main \
   --path=./clusters/dev \
   --personal
@@ -90,3 +164,6 @@ kubectl get pods
 kubectl get svc
 Step 6 — Access app
 minikube service ml-api
+
+11. Flux video :- 
+    https://www.youtube.com/watch?v=DqXDrAR4cJ4

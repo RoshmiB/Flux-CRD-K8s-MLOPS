@@ -34,10 +34,12 @@ def predict(data: dict):
             # input_df[col] = 0  # default fallback
 
     # reorder columns to match training
-    input_df = input_df[features]
+    input_df = input_df[features] 
     prediction = model.predict(input_df)
 
-    return {"prediction": float(prediction[0])}
+    return {
+    "predictions": prediction.tolist()
+}
 
 # def predict(data: dict):
 #     features = np.array(list(data.values())).reshape(1, -1)

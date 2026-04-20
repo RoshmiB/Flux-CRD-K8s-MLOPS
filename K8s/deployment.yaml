@@ -13,7 +13,14 @@ spec:
         app: ml-api
     spec:
       containers:
-      - name: ml-api
-        image: YOUR_DOCKERHUB/ml-api:latest
-        ports:
-        - containerPort: 80
+        - name: ml-app
+          image: 725490567891.dkr.ecr.us-west-2.amazonaws.com/ml-app:v1
+          ports:
+            - containerPort: 8000
+          resources:
+            requests:
+              cpu: 250m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
