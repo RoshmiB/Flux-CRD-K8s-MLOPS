@@ -306,4 +306,13 @@ iii) kubectl rollout restart deployment ml-api -n ml-app
      flux reconcile kustomization flux-system
 
 
+** next understand flux kustomization, how flux git sync works
+   image auto deploy flux
+   karpenter+hpa
+   github action based ci-cd
+   update readme with debug steps for errors encountered
+   automatic cert update
+   ai app
+   istio app
+
 
